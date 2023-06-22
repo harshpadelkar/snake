@@ -13,6 +13,12 @@ import {
   wallElimateHandler,
   arrowTypesHandler,
 } from "../utils/Features";
+import {
+  foodSound,
+  gameOverSound,
+  moveSound,
+  musicSound,
+} from "../utils/Constants";
 import ControllerButton from "./ControllerButton";
 
 const Game = () => {
@@ -32,6 +38,7 @@ const Game = () => {
   }
 
   if (gameOver) {
+    gameOverSound.play();
     alert("Game over");
     restartGame();
   }
@@ -53,6 +60,7 @@ const Game = () => {
 
     //This function make sures that once snake eats food then function stops executing further
     if (newHead.x === food.x && newHead.y === food.y) {
+      foodSound.play();
       setScore((prev) => prev + 1);
       setFood(placeFoodHandler(snake));
       const newSnake = [newHead, ...snake];
@@ -72,6 +80,7 @@ const Game = () => {
     const key = arrowKeyCodes[keyIndex];
 
     if (arrowTypesHandler(direction, key.type)) {
+      moveSound.play();
       snakeMoveHandler(key.type);
     }
   };
@@ -95,11 +104,11 @@ const Game = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-full w-full">
-      <div className=" font-semibold mb-5 text-xl">
+      <div className=" font-semibold mb-5 text-xl md:text-3xl md:font-bold">
         Your score: {score < 10 ? `0${score}` : score}
       </div>
 
-      <div className="game-board sm:h-[400px] sm:w-[400px]">
+      <div className="game-board sm:h-[400px] sm:w-[400px] md:w-[500px] md:h-[500px] lg:h-[600px] lg:w-[600px] board">
         {new Array(BOARD_SIZE).fill().map((_, row, arr) => {
           //Nesed Map methods to create rows and colums efficiently
           /////////////////////////////////////////////////////////
@@ -119,11 +128,11 @@ const Game = () => {
                 key={`${col}-${row}`}
                 //Styling eac
                 className={`
-                ${headCell ? " bg-blue-800" : ""} 
-
-                ${isSnakeCell ? "bg-green-600" : ""} 
+                ${headCell ? " bg-purple-700" : ""} 
                 
-                ${foodCell ? "bg-red-600" : ""} 
+                ${isSnakeCell ? " bg-blue-500 " : ""} 
+                
+                ${foodCell ? "bg-red-600 food" : ""} 
                 text-[5px] flex justify-center items-center`}
               ></div>
             );
@@ -140,6 +149,7 @@ const Game = () => {
               type={icon.type}
               snakeMoveHandler={snakeMoveHandler}
               Icon={icon.icon}
+              onClick={() => moveSound.play()}
             />
           );
         })}
